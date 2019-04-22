@@ -475,3 +475,13 @@ void sinsp_container_manager::set_cri_timeout(int64_t timeout_ms)
 	libsinsp::container_engine::cri::set_cri_timeout(timeout_ms);
 #endif
 }
+
+void sinsp_container_manager::tick()
+{
+#if defined(HAS_CAPTURE)
+	for(auto &eng : m_container_engines)
+	{
+		eng->tick(this);
+	}
+#endif
+}

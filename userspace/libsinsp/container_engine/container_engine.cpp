@@ -24,3 +24,7 @@ using namespace libsinsp::container_engine;
 void resolver::cleanup()
 {
 }
+
+void resolver::tick(sinsp_container_manager* manager)
+{
+}

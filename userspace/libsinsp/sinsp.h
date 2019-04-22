@@ -909,6 +909,9 @@ public:
 	void set_cri_socket_path(const std::string& path);
 	void set_cri_timeout(int64_t timeout_ms);
 
+	// process pending async tasks
+	void tick();
+
 VISIBILITY_PROTECTED
 	bool add_thread(const sinsp_threadinfo *ptinfo);
 	void set_mode(scap_mode_t value)
@@ -1198,6 +1201,7 @@ public:
 	sinsp_evt* m_metaevt;
 	meta_event_callback m_meta_event_callback;
 	void* m_meta_event_callback_data;
+	run_on_interval m_tick_interval;
 
 	// A queue of pending container events. Written from async
 	// callbacks that occur after looking up container

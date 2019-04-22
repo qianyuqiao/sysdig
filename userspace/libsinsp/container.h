@@ -71,6 +71,7 @@ public:
 	void set_cri_extra_queries(bool extra_queries);
 	void set_cri_socket_path(const std::string& path);
 	void set_cri_timeout(int64_t timeout_ms);
+	void tick();
 	sinsp* get_inspector() { return m_inspector; }
 private:
 	string container_to_json(const sinsp_container_info& container_info);

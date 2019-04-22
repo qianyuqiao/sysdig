@@ -37,9 +37,12 @@ public:
 
 	bool resolve(sinsp_container_manager* manager, sinsp_threadinfo* tinfo, bool query_os_for_missing_info) override;
 	void cleanup() override;
+	void tick(sinsp_container_manager* manager) override;
+
 	static void set_cri_socket_path(const std::string& path);
 	static void set_cri_timeout(int64_t timeout_ms);
 	static void set_extra_queries(bool extra_queries);
+
 };
 }
 }

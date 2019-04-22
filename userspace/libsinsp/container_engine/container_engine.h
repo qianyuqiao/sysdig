@@ -32,6 +32,9 @@ public:
 	virtual bool resolve(sinsp_container_manager* manager, sinsp_threadinfo* tinfo, bool query_os_for_missing_info) = 0;
 
 	virtual void cleanup();
+
+	// process pending async requests
+	virtual void tick(sinsp_container_manager* manager);
 };
 }
 }
