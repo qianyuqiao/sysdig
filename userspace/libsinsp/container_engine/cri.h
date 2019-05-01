@@ -22,11 +22,12 @@ limitations under the License.
 #include <string>
 #include <stdint.h>
 
+#include "container_info.h"
+#include "container_engine/container_engine.h"
+
 class sinsp_container_manager;
-class sinsp_container_info;
 class sinsp_threadinfo;
 
-#include "container_engine/container_engine.h"
 
 namespace libsinsp {
 namespace container_engine {

@@ -195,3 +195,11 @@ public:
 #endif
 	uint64_t m_metadata_deadline;
 };
+
+struct container_lookup_result
+{
+	container_lookup_result() : m_successful(false) {}
+	bool m_successful;
+	sinsp_container_info m_container_info;
+};
+
