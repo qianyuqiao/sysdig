@@ -1082,9 +1082,9 @@ int32_t scap_getpid_global(scap_t* handle, int64_t* pid)
 #endif // HAS_CAPTURE
 
 #ifdef CYGWING_AGENT
-int32_t scap_proc_scan_proc_dir(scap_t* handle, char* procdirname, int parenttid, int tid_to_scan, struct scap_threadinfo** procinfo, char *error, bool scan_sockets)
+int32_t scap_proc_scan_proc_dir(scap_t* handle, char* procdirname, char *error)
 {
-	return scap_proc_scan_proc_dir_windows(handle, procinfo, error);
+	return scap_proc_scan_proc_dir_windows(handle, error);
 }
 #endif
 
