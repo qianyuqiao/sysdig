@@ -41,13 +41,29 @@ bool get_cgroup_resource_limits(const delayed_cgroup_key& key, delayed_cgroup_va
 	bool found_all = true;
 
 	std::shared_ptr<std::string> memcg_root = sinsp::lookup_cgroup_dir("memory");
-	g_logger.format(sinsp_logger::SEV_DEBUG, "(async-cg) mem cgroup for container [%s]: %s/%s",
-		key.m_container_id.c_str(), memcg_root->c_str(), key.m_mem_cgroup.c_str());
+    if(memcg_root.find(key.m_container_id) == std::string::npos)
+	{
+		g_logger.format(sinsp_logger::SEV_INFO, "(async-cg) mem cgroup for container [%s]: %s/%s -- memory limits not set",
+			key.m_container_id.c_str(), memcg_root->c_str(), key.m_mem_cgroup.c_str());
+	}
+	else
+	{
+		g_logger.format(sinsp_logger::SEV_DEBUG, "(async-cg) mem cgroup for container [%s]: %s/%s",
+			key.m_container_id.c_str(), memcg_root->c_str(), key.m_mem_cgroup.c_str());
+	}
 	found_all = read_cgroup_val(memcg_root, key.m_mem_cgroup, "memory.limit_in_bytes", value.m_memory_limit) && found_all;
 
 	std::shared_ptr<std::string> cpucg_root = sinsp::lookup_cgroup_dir("cpu");
-	g_logger.format(sinsp_logger::SEV_DEBUG, "(async-cg) cpu cgroup for container [%s]: %s/%s",
-			key.m_container_id.c_str(), cpucg_root->c_str(), key.m_cpu_cgroup.c_str());
+	if(cpucg_root.find(key.m_container_id) == std::string::npos)
+	{
+		g_logger.format(sinsp_logger::SEV_INFO, "(async-cg) cpu cgroup for container [%s]: %s/%s -- CPU shares/quotas not set",
+				key.m_container_id.c_str(), cpucg_root->c_str(), key.m_cpu_cgroup.c_str());
+	}
+	else
+	{
+		g_logger.format(sinsp_logger::SEV_DEBUG, "(async-cg) cpu cgroup for container [%s]: %s/%s",
+				key.m_container_id.c_str(), cpucg_root->c_str(), key.m_cpu_cgroup.c_str());
+	}
 	found_all = read_cgroup_val(cpucg_root, key.m_cpu_cgroup, "cpu.shares", value.m_cpu_shares) && found_all;
 	found_all = read_cgroup_val(cpucg_root, key.m_cpu_cgroup, "cpu.cfs_quota_us", value.m_cpu_quota) && found_all;
 	found_all = read_cgroup_val(cpucg_root, key.m_cpu_cgroup, "cpu.cfs_period_us", value.m_cpu_period) && found_all;
