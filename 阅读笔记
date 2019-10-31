@@ -1,0 +1,65 @@
+sinsp.cpp
+里面有个很重要的属性m_h
+在544行 m_h = scap_open(oargs, error, &scap_rc);
+之后，在scap.c
+739    return scap_open_live_int(error, rc, args.proc_callback,
+					  args.proc_callback_context,
+					  args.import_users,
+					  args.bpf_probe,
+					  args.suppressed_comms);
+
+
+136 handle = (scap_t*) calloc(sizeof(scap_t), 1);
+
+
+208 handle->m_devs = (scap_device*) calloc(sizeof(scap_device), ndevs);
+其中，scap_device数据结构
+typedef struct scap_device
+{
+	int m_fd;
+	char* m_buffer;
+	uint32_t m_lastreadsize;
+	char* m_sn_next_event; // Pointer to the next event available for scap_next
+	uint32_t m_sn_len; // Number of bytes available in the buffer pointed by m_sn_next_event
+	union
+	{
+		// Anonymous struct with ppm stuff
+		struct
+		{
+			struct ppm_ring_buffer_info* m_bufinfo;
+		};
+		// Anonymous struct with bpf stuff
+		struct
+		{
+			uint64_t m_evt_lost;
+		};
+	};
+}scap_device;
+
+
+218 	for(j = 0; j < ndevs; j++)
+	{
+		handle->m_devs[j].m_buffer = (char*)MAP_FAILED;
+		if(!handle->m_bpf)
+		{
+			handle->m_devs[j].m_bufinfo = (struct ppm_ring_buffer_info*)MAP_FAILED;
+		}
+	}
+  
+ppm_ring_buffer_info:
+struct ppm_ring_buffer_info {
+	volatile __u32 head;
+	volatile __u32 tail;
+	volatile __u64 n_evts;			/* Total number of events that were received by the driver. */
+	volatile __u64 n_drops_buffer;		/* Number of dropped events (buffer full). */
+	volatile __u64 n_drops_pf;		/* Number of dropped events (page faults). */
+	volatile __u64 n_preemptions;		/* Number of preemptions. */
+	volatile __u64 n_context_switches;	/* Number of received context switch events. */
+};
+
+
+328 if((handle->m_devs[j].m_fd = open(filename, O_RDWR | O_SYNC)) < 0)
+355 if (fcntl(handle->m_devs[j].m_fd, F_SETFD, FD_CLOEXEC) == -1) 
+366 handle->m_devs[j].m_buffer = (char*)mmap(0, len, PROT_READ, MAP_SHARED, handle->m_devs[j].m_fd, 0);
+387 handle->m_devs[j].m_bufinfo = (struct ppm_ring_buffer_info*)mmap(0, sizeof(struct ppm_ring_buffer_info), 
+    PROT_READ | PROT_WRITE, MAP_SHARED, handle->m_devs[j].m_fd, 0);
