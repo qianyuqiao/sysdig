@@ -285,7 +285,7 @@ luaL_openlib(m_ls, "chisel", ll_chisel, 0);
 m_lua_cinfo = new chiselinfo(m_inspector);
 ......
 lua_pushlightuserdata(m_ls, this); // the object itself
-lua_setglobal(m_ls, "sichisel");
+lua_setglobal(m_ls, "sichisel"); // object is defined as "sichisel"
 
 在spy_users.lua中
 chisel.set_filter("((evt.type=execve and evt.dir=<) or 
@@ -328,3 +328,5 @@ function on_event()
   ......
   local user = evt.field(fuser)
   ......
+
+	
