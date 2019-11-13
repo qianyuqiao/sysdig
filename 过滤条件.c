@@ -216,7 +216,7 @@ bool sinsp_chisel::run(sinsp_evt* evt)
 	// Make the event available to the API
 	//
 	lua_pushlightuserdata(m_ls, evt);
-	lua_setglobal(m_ls, "sievt");
+	lua_setglobal(m_ls, "sievt"); //注意这里的sievt，以后还会用到的
 
 	//
 	// If there is a timeout callback, see if it's time to call it
@@ -318,6 +318,7 @@ int lua_cbacks::set_filter(lua_State *ls)
 	return 0;
 }
 
+
 最后就是我们喜闻乐见的打印环节了
 function on_init()
   ......
@@ -328,5 +329,48 @@ function on_event()
   ......
   local user = evt.field(fuser)
   ......
-
 	
+	
+
+让我们先来看看chisel.request_filed("user.name")
+
+	int lua_cbacks::request_field(lua_State *ls)
+{
+	lua_getglobal(ls, "sichisel");
+
+	sinsp_chisel* ch = (sinsp_chisel*)lua_touserdata(ls, -1);
+	lua_pop(ls, 1);
+
+	sinsp* inspector = ch->m_inspector;
+
+	const char* fld = lua_tostring(ls, 1);
+	// cout << fld << endl;
+	if(fld == NULL)
+	{
+		string err = "chisel requesting nil field";
+		fprintf(stderr, "%s\n", err.c_str());
+		throw sinsp_exception("chisel error");
+	}
+
+	sinsp_filter_check* chk = g_filterlist.new_filter_check_from_fldname(fld,
+		inspector,
+		false);
+
+	if(chk == NULL)
+	{
+		string err = "chisel requesting nonexistent field " + string(fld);
+		fprintf(stderr, "%s\n", err.c_str());
+		throw sinsp_exception("chisel error");
+	}
+
+	chk->parse_field_name(fld, true, false);
+
+	lua_pushlightuserdata(ls, chk);
+
+	ch->m_allocated_fltchecks.push_back(chk);
+
+	return 1;
+}
+
+最后是把chk压入了栈顶,所以fuser实际上是	s
+insp_filter_check* chk = g_filterlist.new_filter_check_from_fldname(fld, inspector, false);
